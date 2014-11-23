@@ -1,8 +1,7 @@
 ---
 title: "Prediction Assignment Writeup"
-author: "Abhishek Umrawa"
-date: "Abhishek Umrawal"
-output: pdf_document
+author: "Abhishek Umrawal"
+output: html_document
 ---
 
 #1. Introduction
