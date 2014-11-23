@@ -1,0 +1,88 @@
+---
+title: Prediction Assignment Writeup
+date: Abhishek Umrawal
+author: (Course Project for Practical Machine Learning Course)
+output: pdf_document
+---
+
+#1. Introduction
+
+The project involves solving a *Classification Problem* (Predicting the Class based on some Independent Variables.)
+
+
+We have been provided the data from accelerometers on the belt, forearm, arm, and dumbell of 6 participants. They were asked to perform barbell lifts correctly and incorrectly in 5 different ways. 
+
+More information is available from the website here: <http://groupware.les.inf.puc-rio.br/har> (see the section on the Weight Lifting Exercise Dataset).
+
+The problem is approached through the following the three steps: 
+
+1.1 Pre-Processing of Data
+
+1.2 Learning the Clasification Hypothesis using the Training Data
+
+1.3 Using the Learned Model for Predicting Classification for the Testing Data
+
+
+##1.1 Pre-Processing of Data
+
+We have first identified the variables which are present in the testing data and then removed all those variables from the training data as well which are not in the testing data, as the final prediction is to be done for the testing data.
+
+Also there was a categorical variable named as *new_window* whihch takes values either *yes* or *no*, we have recoded them as *1* and *0* respectively.
+
+
+##1.2 Learning the Clasification Hypothesis using the Training Data
+
+We need to learn a Classification hypothesis using the training data. Several algorithms like Classification Tree, Random Forests, ADA Boosting etc. have been introduced in the lectures. We are making use of the Classification Tree Algorithm for this purpose. 
+
+Learning a Classification Tree for the Training Data:
+
+```{r,eval=FALSE}
+#Including the Necessary Library rpart
+library(rpart)
+
+#Fitting the Model
+fit <- rpart(classe ~.,method="class", data=training)
+
+# Displaying the Model Results
+printcp(fit)
+
+# Visualizing Cross-Validation Results
+plotcp(fit)  
+
+# Detailed Summary of Splits
+summary(fit) 
+```
+
+**Assessing the Performance of Model on the Training Data itself:**
+
+###1.2.1. Confusion Matrix
+
+```{r,echo=FALSE}
+pred_training<-predict(fit,training)
+write.csv(pred_training,"pred_training.csv")
+ObsVsPred_training<-read.csv("ObsVsPred_training.csv",header=TRUE)
+library(gmodels)
+Observed_Class<-ObsVsPred_training[,1]
+Predicted_Class<-ObsVsPred_training[,2]
+CrossTable(Observed_Class,Predicted_Class,prop.r=FALSE,prop.c=FALSE,prop.t=FALSE,prop.chisq=FALSE,format="SPSS")
+```
+
+###1.2.2 Misclassification Error
+
+Percentage of Misclassification is 26.02%. So the model can be taken as of good adequacy.
+
+
+##1.3 Using the Learned Model for Predicting Classification for the Testing Data
+
+Now we make use of the developed classification model to predict the classes for the testing data. The testing data as 20 observation and we need to predict the class of each of the observations.
+
+Using the learned model we obtain the probabilities for each observation belonging to each of the 5 classes viz. A, B, C, D and E. The class for which an observation as the maximum probability we classify that observation into that class.
+
+We get the following table:
+
+```{r,echo=FALSE}
+pred_testing<-predict(fit,testing)
+write.csv(pred_testing,"pred_testing.csv")
+pred_testing<-read.csv("pred_testing2.csv",header=TRUE)
+pred_testing
+```
